@@ -1,5 +1,8 @@
 use std::collections::HashMap;
 
+//Not really object oriented. 
+//Supports creating structs and adding 'member' functions
+//with impls.
 struct Node {
    value: i32,
    next_element: usize,
@@ -33,7 +36,7 @@ impl DisjointSet {
    
    fn add(&mut self, item: i32) {
       match self.empty_positions.pop() {
-         Some(p) => {
+         Some(p) => {   //Functional-style lambda / closure
             let node = Node::new(item, p);
             self.map.insert(item, p);
             self.elements[p] = node;
@@ -46,9 +49,10 @@ impl DisjointSet {
       }
    }
 
+   //Optional is used as a method of error handling. 
    fn find(&mut self, item: i32) -> Option<i32> {
       match self.map.get(&item) {
-         Some(p) => {
+         Some(p) => {   //Returns value if the key does exist. 
             let mut pos: usize = *p;
 
             while(self.elements[pos].next_element != pos) {
@@ -57,13 +61,17 @@ impl DisjointSet {
 
             return Some(self.elements[pos].value);
          },
-         None => {
+         None => {   //Returns None if the key doesn't exist. 
             return None;
          }
       }
    }
 
    fn union(&mut self, item1: i32, item2: i32) {
+      //An example of passing ownership of an object. 
+      //item1 becomes borrowed by the map.get function.
+      //After it is done executing, ownership is given back
+      //to this function.
       let positionOption1 = self.map.get(&item1);
       let positionOption2 = self.map.get(&item2);
 
@@ -71,7 +79,7 @@ impl DisjointSet {
          return;
       }
 
-      let position1 = *(positionOption1.unwrap());
+      let position1 = *(positionOption1.unwrap()); //Not a borrow because the value of unwrap is copied.
       let position2 = *(positionOption2.unwrap());
 
       let rootVal = self.find(self.elements[position1].value).unwrap();
